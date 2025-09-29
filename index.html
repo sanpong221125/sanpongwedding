@@ -7,21 +7,269 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Lobster&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css">
+    <!-- CSS STYLING -->
+    <style>
+        /* --- การตั้งค่าตัวแปรสีและฟอนต์ --- */
+        :root {
+            --form-background: rgba(255, 255, 255, 0.85);
+            --primary-text-color: #5D4037;
+            --secondary-text-color: #795548;
+            --button-color: #d4a392;
+            --button-hover-color: #c18c7c;
+            --input-border-color: #D7CCC8;
+            --required-color: #c0392b;
+            --error-bg: #ffe0e0; 
+            --error-border: #c0392b;
+        }
+
+        /* --- การตั้งค่าทั่วไป --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            /* --- URL รูปพื้นหลังที่ลูกค้าต้องการ --- */
+            background-image: url('https://img5.pic.in.th/file/secure-sv1/1G3A4650.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--primary-text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- Utility Class & Animation --- */
+        #attendees-group {
+            max-height: 100px;
+            transition: max-height 0.3s ease-in-out, opacity 0.5s ease-in-out, margin 0.3s ease-in-out;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        /* เมื่อซ่อน ให้ดึง max-height ออกและซ่อน overflow */
+        .hidden {
+            opacity: 0 !important;
+            max-height: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border-width: 0 !important;
+        }
+        
+        /* --- คอนเทนเนอร์หลัก --- */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: var(--form-background);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(0.3px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        /* --- Header และ Footer --- */
+        header h1 {
+            text-align: center;
+            font-family: 'Lobster', cursive;
+            font-size: 3em;
+            font-weight: 400;
+            margin-bottom: 25px;
+            color: var(--primary-text-color);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1em;
+            color: var(--secondary-text-color);
+        }
+
+        /* --- ส่วนของฟอร์ม --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+
+        .form-group label .required-star {
+            color: var(--required-color);
+            margin-left: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border-color);
+            background-color: #fff;
+            font-size: 1em;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--button-color);
+            box-shadow: 0 0 0 2px rgba(212, 163, 146, 0.3);
+        }
+
+        /* --- Radio Buttons Styling --- */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--input-border-color);
+            border-radius: 8px;
+            background-color: #fff;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+
+        @media (min-width: 500px) {
+            .radio-label {
+                width: auto;
+                flex-grow: 1;
+            }
+        }
+
+        .radio-group input[type="radio"]:checked + .radio-label {
+            background-color: #fdf0eb;
+            border-color: var(--button-color);
+            font-weight: 500;
+        }
+
+        .radio-label .custom-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--input-border-color);
+            border-radius: 50%;
+            margin-right: 10px;
+            position: relative;
+            transition: border-color 0.3s;
+            flex-shrink: 0;
+        }
+            
+        .radio-group input[type="radio"]:checked + .radio-label .custom-radio {
+            border-color: var(--button-color);
+        }
+
+        .radio-label .custom-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--button-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .radio-group input[type="radio"]:checked + .radio-label .custom-radio::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* --- ปุ่ม Submit --- */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--button-hover-color);
+        }
+
+        /* --- ข้อความยืนยันหลังส่ง และ Error Modal --- */
+        .confirmation-view {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 0;
+            display: none; 
+            min-height: 300px;
+        }
+        
+        /* Error Styling */
+        #error-modal {
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-border);
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        #error-modal h2 {
+            color: var(--required-color);
+        }
+
+        /* --- การปรับหน้าจอสำหรับมือถือ --- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            header h1 {
+                font-size: 2.5em;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container" id="main-container">
-        <header>
-            <h1>San & Pong Wedding RSVP</h1>
-        </header>
 
+        <!-- CONTENT -->
         <main id="form-main">
-            <form id="rsvp-form" action="https://script.google.com/macros/s/AKfycbzhilDuVKrSeNI2m962ip7RH1tlfb_uGBnkrVgRxx3CxyLr7XZNXY7gx-a54QAjlpKIMQ/exec" method="POST">
+            <header>
+                <h1>San & Pong Wedding RSVP</h1>
+            </header>
+            
+            <!-- ⭐️ สำคัญ: อัปเดต URL Web App ใหม่ล่าสุดของคุณที่ลงท้ายด้วย /exec ⭐️ -->
+            <form id="rsvp-form" action="https://script.google.com/macros/s/AKfycbzg6XXy0XKGjf2IHwQvbs4pozM1G_Vp-o90l7cclT4pOqI1juvcK5HJn7TyUrPc_7VLag/exec" method="POST">
+                
                 <div class="form-group">
                     <label for="name">ชื่อ-นามสกุล หรือชื่อเล่น <span class="required-star">*</span></label>
+                    <!-- ลบ placeholder แล้ว -->
                     <input type="text" id="name" name="entry.559352220" class="form-control" required>
                 </div>
 
@@ -62,10 +310,12 @@
 
                 <div class="form-group" id="message-group">
                     <label for="message">มีอะไรอยากบอกเจ้าบ่าวเจ้าสาวไหม</label>
+                    <!-- ลบ placeholder แล้ว -->
                     <textarea id="message" name="entry.778825470" class="form-control" rows="4"></textarea>
                 </div>
 
-                <button type="submit" class="submit-btn">ส่งคำตอบ</button>
+                <!-- เปลี่ยนปุ่มเป็น SUBMIT -->
+                <button type="submit" class="submit-btn">SUBMIT</button>
             </form>
         </main>
 
@@ -73,111 +323,158 @@
             <p>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา</p>
         </footer>
         
+        <!-- Custom Confirmation Message -->
         <div id="confirmation-message" class="confirmation-view">
-            <h2>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา</h2>
+            <h2>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา!</h2>
             <p>เราได้รับข้อมูลของคุณเรียบร้อยแล้วค่ะ/ครับ</p>
+        </div>
+        
+        <!-- Custom Error Modal (แทนที่ alert()) -->
+        <div id="error-modal" class="confirmation-view">
+            <h2 style="color: var(--required-color);">เกิดข้อผิดพลาดในการส่งข้อมูล</h2>
+            <p id="error-modal-text" style="margin-bottom: 20px;">กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าบ่าว/เจ้าสาวโดยตรงหากปัญหายังคงอยู่</p>
+            <button class="submit-btn" style="background-color: var(--required-color); width: auto; padding: 10px 20px;" onclick="document.getElementById('error-modal').style.display='none'; document.getElementById('form-main').style.display='block'; document.getElementById('form-footer').style.display='block';">ปิด</button>
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC (JSON Submission) -->
     <script>
         const formMain = document.getElementById('form-main');
         const formFooter = document.getElementById('form-footer');
         const confirmationMessage = document.getElementById('confirmation-message');
+        const errorModal = document.getElementById('error-modal');
+        const errorModalText = document.getElementById('error-modal-text');
         const rsvpForm = document.getElementById('rsvp-form');
         
         const attendanceRadios = document.querySelectorAll('input[name="entry.924523986"]');
         const attendeesInput = document.getElementById('attendees');
         const attendeesGroup = document.getElementById('attendees-group');
 
-        // Logic เพื่อป้องกันการใส่ที่ไม่ใช่ตัวเลขในช่องจำนวนผู้เข้าร่วม (โค้ดใหม่)
+        // ฟังก์ชันแสดง Modal ข้อผิดพลาด (แทนที่ alert())
+        function showCustomError(message) {
+            formMain.style.display = 'none';
+            formFooter.style.display = 'none';
+            confirmationMessage.style.display = 'none';
+            errorModalText.textContent = message;
+            errorModal.style.display = 'flex';
+        }
+        
+        // Logic เพื่อป้องกันการใส่ที่ไม่ใช่ตัวเลขในช่องจำนวนผู้เข้าร่วม
         attendeesInput.addEventListener('keydown', function(e) {
-            // อนุญาตให้กดปุ่มควบคุมบางปุ่ม: Backspace, Tab, Escape, Enter, Arrows
             if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
-                // อนุญาต: Ctrl+A, Command+A
                 (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
-                // อนุญาต: Home, End, Left, Right
                 (e.keyCode >= 35 && e.keyCode <= 40)) {
                 return;
             }
-            // ตรวจสอบว่าคีย์เป็นตัวเลข (0-9) หรือจากปุ่มกดตัวเลข (Numpad)
             if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
                 e.preventDefault();
             }
         });
 
-        // Logic เพื่อลบตัวอักษรที่ไม่ใช่ตัวเลขที่อาจถูก Paste เข้ามา (โค้ดใหม่)
         attendeesInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
 
-        // Logic การซ่อน/แสดง และการกำหนด Required (ลบ Alert แล้ว)
+        // Logic การซ่อน/แสดง และการกำหนด Required
         attendanceRadios.forEach(radio => {
             radio.addEventListener('change', () => {
-                if (document.getElementById('rsvp_yes').checked) {
-                    // ถ้าเลือก "เข้าร่วมงาน"
-                    attendeesGroup.classList.remove('hidden'); // แสดงคำถาม
-                    attendeesInput.required = true; // กำหนดให้ต้องตอบ
+                const isJoining = document.getElementById('rsvp_yes').checked;
+                if (isJoining) {
+                    attendeesGroup.classList.remove('hidden');
+                    attendeesInput.required = true;
+                    attendeesInput.setAttribute('min', '1');
                 } else {
-                    // ถ้าเลือก "ไม่เข้าร่วม" หรือยกเลิกการเลือก
-                    attendeesInput.value = ''; // ล้างค่าจำนวนผู้เข้าร่วม
-                    attendeesGroup.classList.add('hidden'); // ซ่อนคำถาม
-                    attendeesInput.required = false; // ไม่ต้องตอบ
+                    attendeesInput.value = '';
+                    attendeesInput.removeAttribute('min');
+                    attendeesInput.required = false;
+                    attendeesGroup.classList.add('hidden');
                 }
             });
         });
 
-        // Logic การส่งฟอร์ม (POST ไปยัง Apps Script)
-rsvpForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const postUrl = rsvpForm.action;
-    const formData = new FormData(rsvpForm);
-
-    // สร้าง URLSearchParams เพื่อแปลง FormData เป็น query string
-    // ซึ่ง Apps Script จะอ่านง่ายกว่าเมื่อรับข้อมูลแบบ POST
-    const urlEncodedData = new URLSearchParams(formData).toString();
-
-    fetch(postUrl, {
-        method: 'POST',
-        // ต้องกำหนด Header ให้ Apps Script รู้ว่ากำลังรับข้อมูลแบบ Form URL-Encoded
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: urlEncodedData // ส่งข้อมูลแบบ URL Encoded
-    })
-    .then(response => {
-        // ไม่ต้องตรวจสอบ response.ok เพราะ Apps Script จะส่ง Text กลับมา
-        // แต่ถ้าต้องการเช็คความสำเร็จ สามารถใช้ response.json() ได้
-        return response.text(); 
-    })
-    .then(data => {
-        console.log('Success:', data);
-        // แสดงข้อความยืนยัน
-        formMain.style.display = 'none';
-        formFooter.style.display = 'none';
-        confirmationMessage.style.display = 'flex';
-        document.getElementById('main-container').classList.add('is-confirmed');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
-    });
-});
-
         // Logic ทำให้กด Radio ซ้ำเพื่อยกเลิกได้ (Uncheck Logic)
-        let lastChecked = {}; 
+        let lastChecked = {};
         const allRadios = document.querySelectorAll('input[type="radio"]');
 
         allRadios.forEach(radio => {
             radio.addEventListener('click', function() {
                 const groupName = radio.name;
-                
                 if (radio === lastChecked[groupName]) {
                     radio.checked = false;
                     lastChecked[groupName] = null;
-                    radio.dispatchEvent(new Event('change')); // กระตุ้น 'change' event
+                    radio.dispatchEvent(new Event('change'));
                 } else {
                     lastChecked[groupName] = radio;
                 }
+            });
+        });
+
+        // Core Logic: การส่งฟอร์มไปยัง Apps Script ในรูปแบบ JSON
+        rsvpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const postUrl = rsvpForm.action;
+            const formData = new FormData(rsvpForm);
+            
+            // 1. ตรวจสอบเงื่อนไข Required
+            if (document.getElementById('rsvp_yes').checked && (attendeesInput.value === '' || parseInt(attendeesInput.value) < 1)) {
+                showCustomError("กรุณาระบุจำนวนผู้เข้าร่วมงานอย่างน้อย 1 ท่าน (นับรวมตนเอง)");
+                return;
+            }
+
+            // 2. แปลง FormData เป็น JSON Object
+            const formDataObject = {};
+            formData.forEach((value, key) => {
+                // key คือ entry.XXXXXX ซึ่งตรงกับ Apps Script ที่แก้ไขแล้ว
+                formDataObject[key] = value;
+            });
+            const jsonPayload = JSON.stringify(formDataObject); // แปลงเป็น JSON string
+            
+            // 3. แสดงสถานะกำลังโหลด
+            const submitBtn = rsvpForm.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'กำลังส่ง...';
+            submitBtn.disabled = true;
+
+            fetch(postUrl, {
+                method: 'POST',
+                // Header สำคัญมากสำหรับการส่ง JSON ไปยัง Apps Script
+                headers: {
+                    'Content-Type': 'application/json' 
+                },
+                body: jsonPayload // ส่ง JSON string ใน Body
+            })
+            .then(response => {
+                // Apps Script จะตอบกลับเป็น JSON
+                return response.json(); 
+            })
+            .then(data => {
+                if (data.result === 'success') {
+                    // สำเร็จ
+                    formMain.style.display = 'none';
+                    formFooter.style.display = 'none';
+                    confirmationMessage.style.display = 'flex';
+                } else {
+                    // ล้มเหลว (เกิด Error ในโค้ด Apps Script)
+                    throw new Error(`Apps Script Error: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Submission failed:', error);
+                let displayMessage = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
+                
+                if (error.message.includes("Apps Script Error")) {
+                    displayMessage = `เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`;
+                } else if (error.message.includes("Failed to fetch")) {
+                     displayMessage = "การเชื่อมต่อล้มเหลว กรุณาตรวจสอบ URL หรือ Network";
+                }
+
+                showCustomError(displayMessage);
+            })
+            .finally(() => {
+                // คืนค่าปุ่ม
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             });
         });
     </script>
