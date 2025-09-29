@@ -19,7 +19,7 @@
         </header>
 
         <main id="form-main">
-            <form id="rsvp-form" action="https://docs.google.com/forms/d/e/1FAIpQLSd2FsZ5DHj6-5X18sC8luuqhCb9cocFEK-rUPuONgAE3YrRnA/formResponse" method="POST">
+            <form id="rsvp-form" action="https://script.google.com/macros/s/AKfycbwWIIXGe6YpC8cvlYYXDrHCf37axX5gSSDaJfdRhKJhuBjUilWLMfv7Wy6yKyDcOcwvIw/exec" method="POST">
                 <div class="form-group">
                     <label for="name">ชื่อ-นามสกุล หรือชื่อเล่น <span class="required-star">*</span></label>
                     <input type="text" id="name" name="entry.559352220" class="form-control" required>
@@ -57,7 +57,7 @@
                 
                 <div class="form-group hidden" id="attendees-group">
                     <label for="attendees">ระบุจำนวนผู้เข้าร่วมงาน (นับรวมตนเองและผู้ติดตาม) <span class="required-star">*</span></label>
-                    <input type="number" id="attendees" name="entry.186230675" class="form-control" min="1" placeholder="กรอกเฉพาะตัวเลข">
+                    <input type="number" id="attendees" name="entry.186230675" class="form-control" min="1" placeholder="กรอกเฉพาะตัวเลข" inputmode="numeric" pattern="[0-9]*">
                 </div>
 
                 <div class="form-group" id="message-group">
@@ -89,6 +89,27 @@
         const attendeesInput = document.getElementById('attendees');
         const attendeesGroup = document.getElementById('attendees-group');
 
+        // Logic เพื่อป้องกันการใส่ที่ไม่ใช่ตัวเลขในช่องจำนวนผู้เข้าร่วม (โค้ดใหม่)
+        attendeesInput.addEventListener('keydown', function(e) {
+            // อนุญาตให้กดปุ่มควบคุมบางปุ่ม: Backspace, Tab, Escape, Enter, Arrows
+            if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+                // อนุญาต: Ctrl+A, Command+A
+                (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                // อนุญาต: Home, End, Left, Right
+                (e.keyCode >= 35 && e.keyCode <= 40)) {
+                return;
+            }
+            // ตรวจสอบว่าคีย์เป็นตัวเลข (0-9) หรือจากปุ่มกดตัวเลข (Numpad)
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+
+        // Logic เพื่อลบตัวอักษรที่ไม่ใช่ตัวเลขที่อาจถูก Paste เข้ามา (โค้ดใหม่)
+        attendeesInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
         // Logic การซ่อน/แสดง และการกำหนด Required (ลบ Alert แล้ว)
         attendanceRadios.forEach(radio => {
             radio.addEventListener('change', () => {
@@ -105,29 +126,42 @@
             });
         });
 
-        // Logic การส่งฟอร์ม (POST ไปยัง Google Forms)
-        rsvpForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const postUrl = rsvpForm.action;
-            const formData = new FormData(rsvpForm);
+        // Logic การส่งฟอร์ม (POST ไปยัง Apps Script)
+rsvpForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const postUrl = rsvpForm.action;
+    const formData = new FormData(rsvpForm);
 
-            fetch(postUrl, {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors'
-            })
-            .then(() => {
-                // แสดงข้อความยืนยัน
-                formMain.style.display = 'none';
-                formFooter.style.display = 'none';
-                confirmationMessage.style.display = 'flex';
-                document.getElementById('main-container').classList.add('is-confirmed');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
-            });
-        });
+    // สร้าง URLSearchParams เพื่อแปลง FormData เป็น query string
+    // ซึ่ง Apps Script จะอ่านง่ายกว่าเมื่อรับข้อมูลแบบ POST
+    const urlEncodedData = new URLSearchParams(formData).toString();
+
+    fetch(postUrl, {
+        method: 'POST',
+        // ต้องกำหนด Header ให้ Apps Script รู้ว่ากำลังรับข้อมูลแบบ Form URL-Encoded
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: urlEncodedData // ส่งข้อมูลแบบ URL Encoded
+    })
+    .then(response => {
+        // ไม่ต้องตรวจสอบ response.ok เพราะ Apps Script จะส่ง Text กลับมา
+        // แต่ถ้าต้องการเช็คความสำเร็จ สามารถใช้ response.json() ได้
+        return response.text(); 
+    })
+    .then(data => {
+        console.log('Success:', data);
+        // แสดงข้อความยืนยัน
+        formMain.style.display = 'none';
+        formFooter.style.display = 'none';
+        confirmationMessage.style.display = 'flex';
+        document.getElementById('main-container').classList.add('is-confirmed');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
+    });
+});
 
         // Logic ทำให้กด Radio ซ้ำเพื่อยกเลิกได้ (Uncheck Logic)
         let lastChecked = {}; 
