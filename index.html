@@ -9,9 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Lobster&display=swap" rel="stylesheet">
     
-    <!-- CSS STYLING -->
     <style>
-        /* --- การตั้งค่าตัวแปรสีและฟอนต์ --- */
         :root {
             --form-background: rgba(255, 255, 255, 0.85);
             --primary-text-color: #5D4037;
@@ -22,9 +20,9 @@
             --required-color: #c0392b;
             --error-bg: #ffe0e0; 
             --error-border: #c0392b;
+            --loading-color: #555;
         }
 
-        /* --- การตั้งค่าทั่วไป --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,7 +34,6 @@
 
         body {
             font-family: 'IBM Plex Sans Thai', sans-serif;
-            /* --- URL รูปพื้นหลังที่ลูกค้าต้องการ --- */
             background-image: url('https://img5.pic.in.th/file/secure-sv1/1G3A4650.jpg'); 
             background-size: cover;
             background-position: center;
@@ -49,7 +46,6 @@
             padding: 20px;
         }
 
-        /* --- Utility Class & Animation --- */
         #attendees-group {
             max-height: 100px;
             transition: max-height 0.3s ease-in-out, opacity 0.5s ease-in-out, margin 0.3s ease-in-out;
@@ -57,7 +53,6 @@
             margin-bottom: 20px;
         }
 
-        /* เมื่อซ่อน ให้ดึง max-height ออกและซ่อน overflow */
         .hidden {
             opacity: 0 !important;
             max-height: 0 !important;
@@ -68,7 +63,6 @@
             border-width: 0 !important;
         }
         
-        /* --- คอนเทนเนอร์หลัก --- */
         .container {
             max-width: 600px;
             width: 100%;
@@ -81,7 +75,6 @@
             transition: all 0.5s ease;
         }
 
-        /* --- Header และ Footer --- */
         header h1 {
             text-align: center;
             font-family: 'Lobster', cursive;
@@ -98,7 +91,6 @@
             color: var(--secondary-text-color);
         }
 
-        /* --- ส่วนของฟอร์ม --- */
         .form-group {
             margin-bottom: 20px;
         }
@@ -132,7 +124,6 @@
             box-shadow: 0 0 0 2px rgba(212, 163, 146, 0.3);
         }
 
-        /* --- Radio Buttons Styling --- */
         .radio-group {
             display: flex;
             gap: 15px;
@@ -200,7 +191,6 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
-        /* --- ปุ่ม Submit --- */
         .submit-btn {
             width: 100%;
             padding: 15px;
@@ -215,11 +205,16 @@
             transition: background-color 0.3s;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background-color: var(--button-hover-color);
         }
 
-        /* --- ข้อความยืนยันหลังส่ง และ Error Modal --- */
+        .submit-btn:disabled {
+            background-color: var(--loading-color);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
         .confirmation-view {
             display: flex;
             flex-direction: column;
@@ -231,7 +226,6 @@
             min-height: 300px;
         }
         
-        /* Error Styling */
         #error-modal {
             background-color: var(--error-bg);
             border: 1px solid var(--error-border);
@@ -243,7 +237,6 @@
             color: var(--required-color);
         }
 
-        /* --- การปรับหน้าจอสำหรับมือถือ --- */
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -258,18 +251,20 @@
 
     <div class="container" id="main-container">
 
-        <!-- CONTENT -->
         <main id="form-main">
             <header>
                 <h1>San & Pong Wedding RSVP</h1>
             </header>
             
-            <!-- ⭐️ สำคัญ: อัปเดต URL Web App ใหม่ล่าสุดของคุณที่ลงท้ายด้วย /exec ⭐️ -->
-            <form id="rsvp-form" action="https://script.google.com/macros/s/AKfycbzg6XXy0XKGjf2IHwQvbs4pozM1G_Vp-o90l7cclT4pOqI1juvcK5HJn7TyUrPc_7VLag/exec" method="POST">
+            <form 
+                id="rsvp-form" 
+                action="https://script.google.com/macros/s/AKfycbzg6XXy0XKGjf2IHwQvbs4pozM1G_Vp-o90l7cclT4pOqI1juvcK5HJn7TyUrPc_7VLag/exec" 
+                method="POST" 
+                target="hidden_iframe"
+            >
                 
                 <div class="form-group">
                     <label for="name">ชื่อ-นามสกุล หรือชื่อเล่น <span class="required-star">*</span></label>
-                    <!-- ลบ placeholder แล้ว -->
                     <input type="text" id="name" name="entry.559352220" class="form-control" required>
                 </div>
 
@@ -310,11 +305,9 @@
 
                 <div class="form-group" id="message-group">
                     <label for="message">มีอะไรอยากบอกเจ้าบ่าวเจ้าสาวไหม</label>
-                    <!-- ลบ placeholder แล้ว -->
                     <textarea id="message" name="entry.778825470" class="form-control" rows="4"></textarea>
                 </div>
 
-                <!-- เปลี่ยนปุ่มเป็น SUBMIT -->
                 <button type="submit" class="submit-btn">SUBMIT</button>
             </form>
         </main>
@@ -323,21 +316,20 @@
             <p>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา</p>
         </footer>
         
-        <!-- Custom Confirmation Message -->
         <div id="confirmation-message" class="confirmation-view">
             <h2>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา!</h2>
             <p>เราได้รับข้อมูลของคุณเรียบร้อยแล้วค่ะ/ครับ</p>
         </div>
         
-        <!-- Custom Error Modal (แทนที่ alert()) -->
         <div id="error-modal" class="confirmation-view">
             <h2 style="color: var(--required-color);">เกิดข้อผิดพลาดในการส่งข้อมูล</h2>
             <p id="error-modal-text" style="margin-bottom: 20px;">กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าบ่าว/เจ้าสาวโดยตรงหากปัญหายังคงอยู่</p>
-            <button class="submit-btn" style="background-color: var(--required-color); width: auto; padding: 10px 20px;" onclick="document.getElementById('error-modal').style.display='none'; document.getElementById('form-main').style.display='block'; document.getElementById('form-footer').style.display='block';">ปิด</button>
+            <button class="submit-btn" style="background-color: var(--required-color); width: auto; padding: 10px 20px;" onclick="resetFormState();">ปิด</button>
         </div>
     </div>
+    
+    <iframe id="hidden_iframe" name="hidden_iframe" style="display: none;" onload="iframeLoaded();"></iframe>
 
-    <!-- JAVASCRIPT LOGIC (JSON Submission) -->
     <script>
         const formMain = document.getElementById('form-main');
         const formFooter = document.getElementById('form-footer');
@@ -345,12 +337,15 @@
         const errorModal = document.getElementById('error-modal');
         const errorModalText = document.getElementById('error-modal-text');
         const rsvpForm = document.getElementById('rsvp-form');
+        const submitBtn = rsvpForm.querySelector('.submit-btn');
+        const hiddenIframe = document.getElementById('hidden_iframe');
         
         const attendanceRadios = document.querySelectorAll('input[name="entry.924523986"]');
         const attendeesInput = document.getElementById('attendees');
         const attendeesGroup = document.getElementById('attendees-group');
 
-        // ฟังก์ชันแสดง Modal ข้อผิดพลาด (แทนที่ alert())
+        const originalButtonText = "SUBMIT";
+
         function showCustomError(message) {
             formMain.style.display = 'none';
             formFooter.style.display = 'none';
@@ -358,24 +353,29 @@
             errorModalText.textContent = message;
             errorModal.style.display = 'flex';
         }
-        
-        // Logic เพื่อป้องกันการใส่ที่ไม่ใช่ตัวเลขในช่องจำนวนผู้เข้าร่วม
-        attendeesInput.addEventListener('keydown', function(e) {
-            if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
-                (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
-                (e.keyCode >= 35 && e.keyCode <= 40)) {
-                return;
-            }
-            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                e.preventDefault();
-            }
-        });
 
+        function resetFormState() {
+            errorModal.style.display = 'none';
+            confirmationMessage.style.display = 'none';
+            formMain.style.display = 'block';
+            formFooter.style.display = 'block';
+
+            submitBtn.textContent = originalButtonText;
+            submitBtn.disabled = false;
+        }
+
+        function iframeLoaded() {
+            if (submitBtn.disabled) {
+                formMain.style.display = 'none';
+                formFooter.style.display = 'none';
+                confirmationMessage.style.display = 'flex';
+            }
+        }
+        
         attendeesInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
 
-        // Logic การซ่อน/แสดง และการกำหนด Required
         attendanceRadios.forEach(radio => {
             radio.addEventListener('change', () => {
                 const isJoining = document.getElementById('rsvp_yes').checked;
@@ -392,90 +392,46 @@
             });
         });
 
-        // Logic ทำให้กด Radio ซ้ำเพื่อยกเลิกได้ (Uncheck Logic)
         let lastChecked = {};
         const allRadios = document.querySelectorAll('input[type="radio"]');
 
         allRadios.forEach(radio => {
             radio.addEventListener('click', function() {
                 const groupName = radio.name;
-                if (radio === lastChecked[groupName]) {
+                if (radio === lastChecked[groupName] && radio.checked) {
                     radio.checked = false;
                     lastChecked[groupName] = null;
                     radio.dispatchEvent(new Event('change'));
                 } else {
                     lastChecked[groupName] = radio;
+                    radio.dispatchEvent(new Event('change'));
                 }
             });
         });
 
-        // Core Logic: การส่งฟอร์มไปยัง Apps Script ในรูปแบบ JSON
         rsvpForm.addEventListener('submit', function(e) {
-            e.preventDefault();
             
-            const postUrl = rsvpForm.action;
-            const formData = new FormData(rsvpForm);
-            
-            // 1. ตรวจสอบเงื่อนไข Required
             if (document.getElementById('rsvp_yes').checked && (attendeesInput.value === '' || parseInt(attendeesInput.value) < 1)) {
+                e.preventDefault();
                 showCustomError("กรุณาระบุจำนวนผู้เข้าร่วมงานอย่างน้อย 1 ท่าน (นับรวมตนเอง)");
                 return;
             }
 
-            // 2. แปลง FormData เป็น JSON Object
-            const formDataObject = {};
-            formData.forEach((value, key) => {
-                // key คือ entry.XXXXXX ซึ่งตรงกับ Apps Script ที่แก้ไขแล้ว
-                formDataObject[key] = value;
-            });
-            const jsonPayload = JSON.stringify(formDataObject); // แปลงเป็น JSON string
-            
-            // 3. แสดงสถานะกำลังโหลด
-            const submitBtn = rsvpForm.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
             submitBtn.textContent = 'กำลังส่ง...';
             submitBtn.disabled = true;
 
-            fetch(postUrl, {
-                method: 'POST',
-                // Header สำคัญมากสำหรับการส่ง JSON ไปยัง Apps Script
-                headers: {
-                    'Content-Type': 'application/json' 
-                },
-                body: jsonPayload // ส่ง JSON string ใน Body
-            })
-            .then(response => {
-                // Apps Script จะตอบกลับเป็น JSON
-                return response.json(); 
-            })
-            .then(data => {
-                if (data.result === 'success') {
-                    // สำเร็จ
-                    formMain.style.display = 'none';
-                    formFooter.style.display = 'none';
-                    confirmationMessage.style.display = 'flex';
-                } else {
-                    // ล้มเหลว (เกิด Error ในโค้ด Apps Script)
-                    throw new Error(`Apps Script Error: ${data.message}`);
+            const submissionTimeout = setTimeout(() => {
+                if (submitBtn.disabled) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalButtonText;
+                    showCustomError("ไม่ได้รับการตอบกลับจากเซิร์ฟเวอร์ กรุณาลองส่งข้อมูลใหม่อีกครั้ง");
                 }
-            })
-            .catch(error => {
-                console.error('Submission failed:', error);
-                let displayMessage = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
-                
-                if (error.message.includes("Apps Script Error")) {
-                    displayMessage = `เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`;
-                } else if (error.message.includes("Failed to fetch")) {
-                     displayMessage = "การเชื่อมต่อล้มเหลว กรุณาตรวจสอบ URL หรือ Network";
-                }
+            }, 10000);
 
-                showCustomError(displayMessage);
-            })
-            .finally(() => {
-                // คืนค่าปุ่ม
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            });
+            hiddenIframe.onload = () => {
+                clearTimeout(submissionTimeout);
+                iframeLoaded();
+            };
         });
     </script>
 </body>
