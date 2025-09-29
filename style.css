@@ -85,7 +85,7 @@ body {
     padding: 30px 40px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(0.3px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.5s ease;
 }
