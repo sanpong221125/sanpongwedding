@@ -5,11 +5,217 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>San & Pong Wedding RSVP</title>
     
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Lobster&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css">
+    <!-- CSS STYLING -->
+    <style>
+        :root {
+            --primary-color: #A96E78; /* Rose Gold/Mauve */
+            --secondary-color: #EADEDA; /* Light Cream */
+            --dark-text: #333333;
+            --light-text: #FFFFFF;
+            --error-color: #D32F2F;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background-color: var(--secondary-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: var(--light-text);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            box-sizing: border-box;
+            transition: all 0.5s ease-in-out;
+        }
+
+        header h1 {
+            font-family: 'Lobster', cursive;
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .required-star {
+            color: var(--error-color);
+            margin-left: 2px;
+            font-weight: 700;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #CCCCCC;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(169, 110, 120, 0.2);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+        }
+
+        /* Radio Group Styling */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            transition: background-color 0.3s, border-color 0.3s;
+            background-color: var(--secondary-color);
+        }
+
+        .radio-label:hover {
+            background-color: #F8F0F2;
+        }
+
+        input[type="radio"] {
+            display: none; /* ซ่อน radio input เริ่มต้น */
+        }
+
+        .custom-radio {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            margin-right: 10px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .custom-radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        input[type="radio"]:checked + .radio-label .custom-radio::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        input[type="radio"]:checked + .radio-label {
+            border-color: var(--primary-color);
+            background-color: #F8F0F2;
+            font-weight: 600;
+        }
+
+        /* Button Styling */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(169, 110, 120, 0.4);
+        }
+
+        .submit-btn:hover {
+            background-color: #925c64;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Confirmation and Hidden Elements */
+        .hidden {
+            display: none !important;
+        }
+
+        .confirmation-view {
+            text-align: center;
+            padding: 50px 0;
+            display: none; /* ซ่อนเริ่มต้น */
+            flex-direction: column;
+            align-items: center;
+            min-height: 300px; /* เพื่อให้ดูดีเมื่อแสดง */
+            justify-content: center;
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+
+        .confirmation-view h2 {
+            color: var(--primary-color);
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-view p {
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+            .confirmation-view {
+                min-height: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -19,10 +225,12 @@
         </header>
 
         <main id="form-main">
-            <form id="rsvp-form" action="https://script.google.com/macros/s/AKfycbz04XHMrmjjfrkqFbZxgtRIrND4CrSBnt7om9cLMEZr8xl8GJbSNbRgLPkbR1Yp1-1oxw/exec" method="POST">
+            <!-- ⭐️ สำคัญ: ต้องแทนที่ด้วย Web App URL ใหม่ล่าสุดของคุณที่ลงท้ายด้วย /exec ⭐️ -->
+            <form id="rsvp-form" action="YOUR_APPS_SCRIPT_WEB_APP_URL" method="POST">
+                
                 <div class="form-group">
                     <label for="name">ชื่อ-นามสกุล หรือชื่อเล่น <span class="required-star">*</span></label>
-                    <input type="text" id="name" name="entry.559352220" class="form-control" required>
+                    <input type="text" id="name" name="entry.559352220" class="form-control" required placeholder="เช่น สันติ สุขใจ หรือ ป๋อง">
                 </div>
 
                 <div class="form-group">
@@ -57,12 +265,12 @@
                 
                 <div class="form-group hidden" id="attendees-group">
                     <label for="attendees">ระบุจำนวนผู้เข้าร่วมงาน (นับรวมตนเองและผู้ติดตาม) <span class="required-star">*</span></label>
-                    <input type="number" id="attendees" name="entry.186230675" class="form-control" min="1" placeholder="กรอกเฉพาะตัวเลข" inputmode="numeric" pattern="[0-9]*">
+                    <input type="number" id="attendees" name="entry.186230675" class="form-control" min="1" placeholder="กรอกเฉพาะตัวเลข (เช่น 2)" inputmode="numeric" pattern="[0-9]*">
                 </div>
 
                 <div class="form-group" id="message-group">
                     <label for="message">มีอะไรอยากบอกเจ้าบ่าวเจ้าสาวไหม</label>
-                    <textarea id="message" name="entry.778825470" class="form-control" rows="4"></textarea>
+                    <textarea id="message" name="entry.778825470" class="form-control" rows="4" placeholder="ข้อความอวยพรสั้นๆ หรือข้อความถึงเจ้าบ่าวเจ้าสาว"></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn">ส่งคำตอบ</button>
@@ -73,96 +281,132 @@
             <p>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา</p>
         </footer>
         
+        <!-- Custom Modal for Messages (แทนที่ alert()) -->
         <div id="confirmation-message" class="confirmation-view">
-            <h2>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา</h2>
+            <h2>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา!</h2>
             <p>เราได้รับข้อมูลของคุณเรียบร้อยแล้วค่ะ/ครับ</p>
+        </div>
+
+        <div id="error-modal" class="confirmation-view" style="background-color: #FBEAEA; border: 1px solid var(--error-color);">
+            <h2 style="color: var(--error-color);">เกิดข้อผิดพลาดในการส่งข้อมูล</h2>
+            <p id="error-modal-text">กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าบ่าว/เจ้าสาวโดยตรงหากปัญหายังคงอยู่</p>
+            <button class="submit-btn" style="background-color: var(--error-color); width: auto; padding: 10px 20px; margin-top: 15px;" onclick="document.getElementById('error-modal').style.display='none'; document.getElementById('form-main').style.display='block'; document.getElementById('form-footer').style.display='block';">ปิด</button>
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
+        // DOM Elements
         const formMain = document.getElementById('form-main');
         const formFooter = document.getElementById('form-footer');
         const confirmationMessage = document.getElementById('confirmation-message');
+        const errorModal = document.getElementById('error-modal');
+        const errorModalText = document.getElementById('error-modal-text');
         const rsvpForm = document.getElementById('rsvp-form');
         
         const attendanceRadios = document.querySelectorAll('input[name="entry.924523986"]');
         const attendeesInput = document.getElementById('attendees');
         const attendeesGroup = document.getElementById('attendees-group');
 
-        // Logic เพื่อป้องกันการใส่ที่ไม่ใช่ตัวเลขในช่องจำนวนผู้เข้าร่วม (โค้ดใหม่)
-        attendeesInput.addEventListener('keydown', function(e) {
-            // อนุญาตให้กดปุ่มควบคุมบางปุ่ม: Backspace, Tab, Escape, Enter, Arrows
-            if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
-                // อนุญาต: Ctrl+A, Command+A
-                (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
-                // อนุญาต: Home, End, Left, Right
-                (e.keyCode >= 35 && e.keyCode <= 40)) {
-                return;
-            }
-            // ตรวจสอบว่าคีย์เป็นตัวเลข (0-9) หรือจากปุ่มกดตัวเลข (Numpad)
-            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                e.preventDefault();
-            }
-        });
+        // ฟังก์ชันแสดง Modal ข้อผิดพลาด (แทนที่ alert())
+        function showCustomError(message) {
+            formMain.style.display = 'none';
+            formFooter.style.display = 'none';
+            confirmationMessage.style.display = 'none';
+            errorModalText.textContent = message;
+            errorModal.style.display = 'flex';
+        }
 
-        // Logic เพื่อลบตัวอักษรที่ไม่ใช่ตัวเลขที่อาจถูก Paste เข้ามา (โค้ดใหม่)
-        attendeesInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-
-        // Logic การซ่อน/แสดง และการกำหนด Required (ลบ Alert แล้ว)
+        // Logic ซ่อน/แสดง จำนวนผู้เข้าร่วม และกำหนด required
         attendanceRadios.forEach(radio => {
             radio.addEventListener('change', () => {
-                if (document.getElementById('rsvp_yes').checked) {
-                    // ถ้าเลือก "เข้าร่วมงาน"
-                    attendeesGroup.classList.remove('hidden'); // แสดงคำถาม
-                    attendeesInput.required = true; // กำหนดให้ต้องตอบ
+                const isJoining = document.getElementById('rsvp_yes').checked;
+                
+                if (isJoining) {
+                    attendeesGroup.classList.remove('hidden');
+                    attendeesInput.required = true;
+                    attendeesInput.setAttribute('min', '1'); // บังคับให้เริ่มที่ 1
                 } else {
-                    // ถ้าเลือก "ไม่เข้าร่วม" หรือยกเลิกการเลือก
-                    attendeesInput.value = ''; // ล้างค่าจำนวนผู้เข้าร่วม
-                    attendeesGroup.classList.add('hidden'); // ซ่อนคำถาม
-                    attendeesInput.required = false; // ไม่ต้องตอบ
+                    // ถ้าเลือก "ไม่เข้าร่วม"
+                    attendeesInput.value = '';
+                    attendeesInput.removeAttribute('min'); 
+                    attendeesInput.required = false;
+                    attendeesGroup.classList.add('hidden');
                 }
             });
         });
 
-        // Logic การส่งฟอร์ม (POST ไปยัง Apps Script)
-rsvpForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const postUrl = rsvpForm.action;
-    const formData = new FormData(rsvpForm);
+        // ⭐️ Core Logic: การส่งฟอร์มไปยัง Apps Script ⭐️
+        rsvpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const postUrl = rsvpForm.action;
+            const formData = new FormData(rsvpForm);
+            
+            // 1. ตรวจสอบว่าผู้เข้าร่วมใส่ค่าเป็น 0 เมื่อเลือก "เข้าร่วมงาน" หรือไม่
+            if (document.getElementById('rsvp_yes').checked && (attendeesInput.value === '' || parseInt(attendeesInput.value) < 1)) {
+                showCustomError("กรุณาระบุจำนวนผู้เข้าร่วมงานอย่างน้อย 1 ท่าน (นับรวมตนเอง)");
+                return;
+            }
 
-    // สร้าง URLSearchParams เพื่อแปลง FormData เป็น query string
-    // ซึ่ง Apps Script จะอ่านง่ายกว่าเมื่อรับข้อมูลแบบ POST
-    const urlEncodedData = new URLSearchParams(formData).toString();
+            // 2. แปลง FormData เป็น Query String (URL-Encoded)
+            // นี่คือสิ่งสำคัญที่แก้ปัญหา TypeError และ 400 Bad Request
+            const urlEncodedData = new URLSearchParams(formData).toString();
+            
+            // 3. แสดงสถานะกำลังโหลด
+            const submitBtn = rsvpForm.querySelector('.submit-btn');
+            submitBtn.textContent = 'กำลังส่ง...';
+            submitBtn.disabled = true;
 
-    fetch(postUrl, {
-        method: 'POST',
-        // ต้องกำหนด Header ให้ Apps Script รู้ว่ากำลังรับข้อมูลแบบ Form URL-Encoded
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: urlEncodedData // ส่งข้อมูลแบบ URL Encoded
-    })
-    .then(response => {
-        // ไม่ต้องตรวจสอบ response.ok เพราะ Apps Script จะส่ง Text กลับมา
-        // แต่ถ้าต้องการเช็คความสำเร็จ สามารถใช้ response.json() ได้
-        return response.text(); 
-    })
-    .then(data => {
-        console.log('Success:', data);
-        // แสดงข้อความยืนยัน
-        formMain.style.display = 'none';
-        formFooter.style.display = 'none';
-        confirmationMessage.style.display = 'flex';
-        document.getElementById('main-container').classList.add('is-confirmed');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
-    });
-});
+            fetch(postUrl, {
+                method: 'POST',
+                // 4. Header สำคัญมากสำหรับการสื่อสารกับ Apps Script
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: urlEncodedData
+            })
+            .then(response => {
+                // ตรวจสอบสถานะ HTTP ก่อน
+                if (!response.ok) {
+                    // หากเกิด Error ระดับ HTTP (เช่น 404, 500)
+                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+                }
+                // Apps Script จะตอบกลับเป็น JSON
+                return response.json(); 
+            })
+            .then(data => {
+                if (data.result === 'success') {
+                    // สำเร็จ
+                    formMain.style.display = 'none';
+                    formFooter.style.display = 'none';
+                    confirmationMessage.style.display = 'flex';
+                    console.log('Submission successful:', data);
+                } else {
+                    // ล้มเหลว (เกิด Error ในโค้ด Apps Script)
+                    throw new Error(`Apps Script Error: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                // จับ Error ทั้งหมด (Network หรือ Script)
+                console.error('Submission failed:', error);
+                let displayMessage = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต และลองใหม่อีกครั้ง";
+                
+                if (error.message.includes("Apps Script Error")) {
+                    displayMessage = `เกิดข้อผิดพลาดในระบบบันทึกข้อมูล (Apps Script) กรุณาตรวจสอบ Log ใน Apps Script Editor: ${error.message}`;
+                } else if (error.message.includes("HTTP Error: 400")) {
+                     displayMessage = "เกิดข้อผิดพลาด 400 Bad Request กรุณาตรวจสอบ URL ในฟอร์มว่าถูกต้อง (ต้องลงท้ายด้วย /exec) และสิทธิ์การเข้าถึงเป็น 'Anyone'";
+                }
 
+                showCustomError(displayMessage);
+            })
+            .finally(() => {
+                // คืนค่าปุ่ม
+                submitBtn.textContent = 'ส่งคำตอบ';
+                submitBtn.disabled = false;
+            });
+        });
+        
         // Logic ทำให้กด Radio ซ้ำเพื่อยกเลิกได้ (Uncheck Logic)
         let lastChecked = {}; 
         const allRadios = document.querySelectorAll('input[type="radio"]');
