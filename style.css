@@ -1,0 +1,260 @@
+/* --- การตั้งค่าตัวแปรสีและฟอนต์ --- */
+:root {
+    --form-background: rgba(255, 255, 255, 0.85);
+    --primary-text-color: #5D4037;
+    --secondary-text-color: #795548;
+    --button-color: #d4a392; 
+    --button-hover-color: #c18c7c;
+    --input-border-color: #D7CCC8;
+    --required-color: #c0392b;
+}
+
+/* --- การตั้งค่าทั่วไป --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html {
+    overflow-y: scroll;
+}
+
+body {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    /* --- อย่าลืม! แก้ URL รูปพื้นหลังของคุณตรงนี้ --- */
+    background-image: url('https://img5.pic.in.th/file/secure-sv1/1G3A4650.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--primary-text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* --- Utility Class & Animation (ส่วนที่ปรับปรุงทั้งหมด) --- */
+#attendees-group {
+    /* กำหนด max-height ที่ใหญ่พอสำหรับเนื้อหา */
+    max-height: 100px; 
+    /* Transition สำหรับการซ่อน/แสดงอย่างราบรื่น */
+    transition: max-height 0.3s ease-in-out, 
+                opacity 0.5s ease-in-out, 
+                margin 0.3s ease-in-out, 
+                padding 0.5s ease-in-out;
+    overflow: hidden;
+    /* กำหนด margin-bottom มาตรฐาน */
+    margin-bottom: 20px; 
+}
+
+/* ⭐ แก้ไข: เมื่อซ่อน ให้ดึง margin-bottom ออกด้วย เพื่อไม่ให้เกิดช่องว่าง */
+.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0 !important; 
+    margin-bottom: 0 !important; /* <--- ตรงนี้ที่สำคัญ */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-width: 0 !important;
+}
+
+/* ✨ การขยับกลุ่มข้อความขึ้นเมื่อกลุ่มผู้เข้าร่วมถูกซ่อน (โค้ดใหม่) ✨ */
+#message-group {
+    /* ตั้งค่า Transition สำหรับการขยับ Margin */
+    transition: margin-top 0.5s ease-in-out;
+    /* Margin-top มาตรฐาน */
+    margin-top: 20px; 
+}
+
+/* เมื่อกลุ่มผู้เข้าร่วมถูกซ่อน (.hidden) ให้ตั้งค่า margin-top ของกลุ่มข้อความถัดไป */
+/* เราต้องใช้ selector ที่เหมาะสมและใช้ CSS Custom Properties เพื่อให้ทำงานในวงกว้าง */
+/* เนื่องจากคุณใช้ sibling selector (+), เราจะลองใช้ negative margin เพื่อดึงขึ้นมา */
+#attendees-group.hidden + #message-group {
+    /* การดึงขึ้นด้วย negative margin ทำให้ขยับขึ้นมาชิดทันที */
+    margin-top: -100px; /* ปรับค่านี้เพื่อให้ช่องว่างดูเหมาะสมที่สุด */
+}
+/* -------------------------------------------------------- */
+
+
+/* --- คอนเทนเนอร์หลัก --- */
+.container {
+    max-width: 600px;
+    width: 100%;
+    background-color: var(--form-background);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.5s ease;
+}
+
+/* --- Header และ Footer --- */
+header h1 {
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    font-size: 3em;
+    font-weight: 400;
+    margin-bottom: 25px;
+    color: var(--primary-text-color);
+}
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1em;
+    color: var(--secondary-text-color);
+}
+
+/* --- ส่วนของฟอร์ม --- */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.form-group label .required-star {
+    color: var(--required-color);
+    margin-left: 4px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border-color);
+    background-color: #fff;
+    font-size: 1em;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--button-color);
+    box-shadow: 0 0 0 2px rgba(212, 163, 146, 0.3);
+}
+
+/* --- Radio Buttons Styling --- */
+.radio-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    background-color: #fff;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+@media (min-width: 500px) {
+    .radio-label {
+        width: auto;
+        flex-grow: 1;
+    }
+}
+
+.radio-group input[type="radio"]:checked + .radio-label {
+    background-color: #fdf0eb;
+    border-color: var(--button-color);
+    font-weight: 500;
+}
+
+.radio-label .custom-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--input-border-color);
+    border-radius: 50%;
+    margin-right: 10px;
+    position: relative;
+    transition: border-color 0.3s;
+    flex-shrink: 0;
+}
+        
+.radio-group input[type="radio"]:checked + .radio-label .custom-radio {
+    border-color: var(--button-color);
+}
+
+.radio-label .custom-radio::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: var(--button-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.2s ease-in-out;
+}
+
+.radio-group input[type="radio"]:checked + .radio-label .custom-radio::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* --- ปุ่ม Submit --- */
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: 600;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    background-color: var(--button-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: var(--button-hover-color);
+}
+
+/* --- ข้อความยืนยันหลังส่ง --- */
+.confirmation-view {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 0;
+}
+
+#confirmation-message {
+    display: none; 
+}
+
+#confirmation-message h2 {
+    font-size: 1.8em;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--primary-text-color);
+}
+
+/* --- การปรับหน้าจอสำหรับมือถือ --- */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    header h1 {
+        font-size: 2.5em;
+    }
+}
