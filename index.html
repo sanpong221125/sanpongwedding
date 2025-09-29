@@ -36,17 +36,82 @@
             font-family: 'IBM Plex Sans Thai', sans-serif;
             background-image: url('https://img5.pic.in.th/file/secure-sv1/1G3A4650.jpg'); 
             background-size: cover;
-            background-position: center center;
+            background-position: center 40%; 
             background-attachment: fixed;
             color: var(--primary-text-color);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: center; 
             min-height: 100vh;
             padding: 20px;
             padding-bottom: 40px;
         }
+        
+        /* === Container Fade-In on Load === */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: var(--form-background);
+            padding: 30px 40px; 
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(0.3px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            
+            /* Initial state: Hidden (Opacity 0) */
+            opacity: 0; 
+            transition: opacity 1s ease-in-out; 
+        }
 
+        /* State for loaded content */
+        .container.loaded {
+            opacity: 1; 
+        }
+
+        /* === Form Content Transition (ใช้คลาส .form-content ร่วมกัน) === */
+        .form-content {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+        
+        .form-content.fade-out {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            /* ใช้ display: none ใน JS หลังจาก transition เพื่อให้ container ยุบตัวได้ */
+        }
+        
+        /* === Confirmation/Error View (Fixed to content height) === */
+        .confirmation-view {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 0;
+            min-height: 300px;
+            
+            /* Initial state: Hidden completely */
+            opacity: 0; 
+            visibility: hidden; 
+            display: none; /* เริ่มต้นซ่อนแบบสมบูรณ์เพื่อไม่ให้กินพื้นที่ */
+            
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+        
+        .confirmation-view.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        #error-modal {
+            background-color: var(--error-bg); 
+            border: 1px solid var(--error-border);
+            border-radius: 12px;
+            padding: 30px; 
+        }
+
+        /* --- ส่วนอื่นๆ ของ CSS คงเดิม --- */
+        
         #attendees-group {
             max-height: 100px;
             transition: max-height 0.3s ease-in-out, opacity 0.5s ease-in-out, margin 0.3s ease-in-out;
@@ -62,18 +127,6 @@
             padding-top: 0 !important;
             padding-bottom: 0 !important;
             border-width: 0 !important;
-        }
-        
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: var(--form-background);
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(0.3px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.5s ease;
         }
 
         header h1 {
@@ -215,29 +268,7 @@
             cursor: not-allowed;
             opacity: 0.8;
         }
-
-        .confirmation-view {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px 0;
-            display: none; 
-            min-height: 300px;
-        }
         
-        #error-modal {
-            background-color: var(--error-bg);
-            border: 1px solid var(--error-border);
-            padding: 30px;
-            border-radius: 12px;
-        }
-
-        #error-modal h2 {
-            color: var(--required-color);
-        }
-
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -252,7 +283,7 @@
 
     <div class="container" id="main-container">
 
-        <main id="form-main">
+        <main id="form-main" class="form-content">
             <header>
                 <h1>San & Pong Wedding RSVP</h1>
             </header>
@@ -313,7 +344,7 @@
             </form>
         </main>
 
-        <footer id="form-footer">
+        <footer id="form-footer" class="form-content">
             <p>ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของพวกเรา</p>
         </footer>
         
@@ -332,8 +363,11 @@
     <iframe id="hidden_iframe" name="hidden_iframe" style="display: none;" onload="iframeLoaded();"></iframe>
 
     <script>
+        const mainContainer = document.getElementById('main-container');
         const formMain = document.getElementById('form-main');
         const formFooter = document.getElementById('form-footer');
+        const formContents = document.querySelectorAll('.form-content'); // ใช้สำหรับ main และ footer
+        
         const confirmationMessage = document.getElementById('confirmation-message');
         const errorModal = document.getElementById('error-modal');
         const errorModalText = document.getElementById('error-modal-text');
@@ -346,30 +380,79 @@
         const attendeesGroup = document.getElementById('attendees-group');
 
         const originalButtonText = "SUBMIT";
+        const FADE_DURATION = 500; // 0.5 seconds for cross-fade
 
-        function showCustomError(message) {
-            formMain.style.display = 'none';
-            formFooter.style.display = 'none';
-            confirmationMessage.style.display = 'none';
-            errorModalText.textContent = message;
-            errorModal.style.display = 'flex';
+        // 1. NEW: Fade-in container when page loads
+        window.addEventListener('load', () => {
+            mainContainer.classList.add('loaded');
+        });
+
+        function hideFormContent() {
+            // 1. เริ่ม Fade Out
+            formContents.forEach(el => el.classList.add('fade-out'));
+            
+            // 2. รอ Fade Out เสร็จ แล้วซ่อนจริง (เพื่อให้ container ยุบตัว)
+            setTimeout(() => {
+                formContents.forEach(el => el.style.display = 'none');
+            }, FADE_DURATION);
+        }
+
+        function showFormContent() {
+            // 1. ให้แสดงผลก่อน (เพื่อคำนวณความสูง)
+            formContents.forEach(el => el.style.display = ''); 
+            
+            // 2. เริ่ม Fade In
+            setTimeout(() => {
+                formContents.forEach(el => el.classList.remove('fade-out'));
+            }, 50); // ดีเลย์เล็กน้อยเพื่อให้ display:block มีผล
+        }
+
+        function showConfirmationView(viewElement) {
+            // 1. Fade Out Form Content
+            hideFormContent();
+            
+            // 2. รอให้ Form หายไปก่อน
+            setTimeout(() => {
+                // 3. แสดง View ใหม่และเริ่ม Fade In
+                viewElement.style.display = 'flex'; // แสดงผล
+                setTimeout(() => {
+                    viewElement.classList.add('show'); // เริ่ม Fade In
+                }, 50); 
+                
+            }, FADE_DURATION);
         }
 
         function resetFormState() {
-            errorModal.style.display = 'none';
-            confirmationMessage.style.display = 'none';
-            formMain.style.display = 'block';
-            formFooter.style.display = 'block';
+            // 1. เริ่ม Fade Out Confirmation/Error View
+            errorModal.classList.remove('show');
+            confirmationMessage.classList.remove('show');
+            
+            // 2. รอให้ View หายไปก่อน
+            setTimeout(() => {
+                errorModal.style.display = 'none';
+                confirmationMessage.style.display = 'none';
+                
+                // 3. แสดง Form Content
+                showFormContent();
+                
+                submitBtn.textContent = originalButtonText;
+                submitBtn.disabled = false;
+            }, FADE_DURATION);
+        }
 
-            submitBtn.textContent = originalButtonText;
-            submitBtn.disabled = false;
+        function showCustomError(message) {
+            errorModalText.textContent = message;
+            errorModal.style.display = 'none'; // Ensure it's hidden before transition
+            showConfirmationView(errorModal);
         }
 
         function iframeLoaded() {
             if (submitBtn.disabled) {
-                formMain.style.display = 'none';
-                formFooter.style.display = 'none';
-                confirmationMessage.style.display = 'flex';
+                clearTimeout(rsvpForm.submissionTimeout); 
+                
+                // Ensure the element is ready for showConfirmationView to work
+                confirmationMessage.style.display = 'none'; 
+                showConfirmationView(confirmationMessage);
             }
         }
         
@@ -421,7 +504,7 @@
             submitBtn.textContent = 'กำลังส่ง...';
             submitBtn.disabled = true;
 
-            const submissionTimeout = setTimeout(() => {
+            rsvpForm.submissionTimeout = setTimeout(() => {
                 if (submitBtn.disabled) {
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalButtonText;
@@ -430,11 +513,9 @@
             }, 10000);
 
             hiddenIframe.onload = () => {
-                clearTimeout(submissionTimeout);
                 iframeLoaded();
             };
         });
     </script>
 </body>
 </html>
-
